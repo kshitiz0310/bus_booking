@@ -8,5 +8,4 @@ const busSchema = new mongoose.Schema({
   totalSeats: { type: Number, required: true },
   bookedSeats: { type: [String], default: [] }
 });
-
 export default mongoose.model("Bus", busSchema);
