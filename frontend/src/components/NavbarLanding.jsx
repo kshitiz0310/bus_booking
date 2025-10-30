@@ -11,7 +11,7 @@ export default function NavbarLanding() {
         <div className="navbar-landing-logo-container">
           <Bus className="navbar-landing-logo-icon" />
         </div>
-        <span className="navbar-landing-title">Smartify</span>
+        <span className="navbar-landing-title">Smart Bus</span>
       </div>
       <div className="navbar-landing-right">
         <Link to="/login">
