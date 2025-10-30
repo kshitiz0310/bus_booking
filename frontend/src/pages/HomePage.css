@@ -1,0 +1,141 @@
+.homepage-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to right, #2563eb, #60a5fa);
+  color: #fff;
+}
+
+.homepage-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px 40px 16px;
+  text-align: center;
+}
+
+.homepage-hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.homepage-hero p {
+  font-size: 1.25rem;
+  margin-bottom: 32px;
+}
+
+.homepage-btn {
+  background: #fff;
+  color: #2563eb;
+  font-weight: bold;
+  padding: 14px 36px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background 0.2s;
+}
+
+.homepage-btn:hover {
+  background: #f1f5f9;
+}
+
+.homepage-features {
+  background: #fff;
+  color: #222;
+  padding: 48px 16px;
+}
+
+.homepage-features h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 36px;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+}
+
+.feature-card {
+  background: #f3f4f6;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 32px 20px;
+  width: 280px;
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  color: #555;
+}
+
+.homepage-footer {
+  background: #1e293b;
+  color: #fff;
+  padding: 40px 0 0 0;
+}
+
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  justify-content: space-between;
+}
+
+.footer-grid > div {
+  min-width: 220px;
+  margin-bottom: 24px;
+}
+
+.footer-grid h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-grid ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-grid li {
+  margin-bottom: 8px;
+}
+
+.footer-grid a {
+  color: #fff;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.footer-grid a:hover {
+  color: #60a5fa;
+}
+
+.footer-bottom {
+  border-top: 1px solid #334155;
+  margin-top: 16px;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 0.95rem;
+}

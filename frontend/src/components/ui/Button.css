@@ -1,0 +1,21 @@
+.button-base {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-weight: 500; /* font-medium */
+  transition-property: all; /* transition-all */
+  transition-duration: 200ms; /* duration-200 */
+}
+
+.button-solid {
+  background-color: #2563eb; /* bg-blue-600 */
+  color: #ffffff; /* text-white */
+}
+
+.button-solid:hover {
+  background-color: #1e40af; /* hover:bg-blue-700 */
+}
+
+.button-outline {
+  border: 1px solid currentColor; /* border border-current */
+  background-color: transparent; /* bg-transparent */
+}

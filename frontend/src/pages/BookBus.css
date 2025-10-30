@@ -1,0 +1,63 @@
+.bookbus-container {
+  padding: 32px;
+  background: #f0f4f8;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 50px);
+  gap: 12px;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.seat {
+  width: 50px;
+  height: 50px;
+  background: #e0e7ef;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 2px solid transparent;
+}
+
+.seat.selected {
+  background: #4caf50;
+  color: #fff;
+  border-color: #388e3c;
+}
+
+.seat.booked {
+  background: #f44336;
+  color: #fff;
+  cursor: not-allowed;
+  border-color: #b71c1c;
+}
+
+.confirm-btn {
+  background: #1976d2;
+  color: #fff;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.2s;
+}
+
+.confirm-btn:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #0d47a1;
+}
