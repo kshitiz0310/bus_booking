@@ -1,0 +1,195 @@
+.homepage-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* background: linear-gradient(to right, #2563eb, #60a5fa); */
+  /* color: #336ab6; */
+  
+}
+
+.background-img {
+  position: relative; /* Remove duplicate position property */
+  height: 100vh;
+  width: 100%;
+  background-image: url('../uploads/bus-background.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px; /* keep some breathing room above footer */
+}
+
+/* Make sure the overlay is properly positioned */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0.7)
+  );
+  z-index: 1;
+  pointer-events: none; /* Allows clicking through the overlay */
+}
+
+.homepage-hero {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px 40px 16px;
+  text-align: center;
+}
+
+.homepage-hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.homepage-hero p {
+  font-size: 1.25rem;
+  margin-bottom: 32px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.homepage-btn {
+  /* background: #fff; */
+  backdrop-filter: blur(20px);
+  color: #ffffff;
+  font-weight: bold;
+  padding: 14px 36px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background 0.2s;
+}
+
+.homepage-btn:hover {
+  background: #f1f5f9;
+}
+
+.homepage-features {
+  position: relative;
+  z-index: 2;
+  color: #eee6e6;
+  padding: 48px 16px;
+  margin-bottom: 20px; /* reduced gap between cards and footer */
+}
+
+.homepage-features h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 36px;
+  color: #ffffff;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  margin-bottom: 20px; /* extra safety spacing */
+}
+
+.feature-card {
+  /* background: #f3f4f6; */
+  backdrop-filter: blur(50px);
+  border-radius: 12px;
+  /* box-shadow: 0 2px 8px rgba(0,0,0,0.07); */
+  padding: 32px 20px;
+  width: 280px;
+  text-align: center;
+  /* margin-bottom: 20px; Changed from 50px to 20px */
+  background: rgba(118, 120, 237, 0.1); /* Add this */
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* .feature-card p {
+  color: #555;
+} */
+
+.homepage-footer {
+  backdrop-filter: blur(8px);
+  background: linear-gradient(135deg, #2b4162 0%, #12100e 100%); /* same tone as navbar */
+  color: #fff;
+  padding: 28px 0;         /* vertical padding */
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  margin-top: 0px;        /* spacing between features and footer */
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto 32px auto;
+  padding: 0 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-grid > div {
+  min-width: 220px;
+  margin-bottom: 24px;
+}
+
+.footer-grid h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-grid ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-grid li {
+  margin-bottom: 8px;
+}
+
+.footer-grid a {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-grid a:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid #334155;
+  margin-top: 16px;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 0.95rem;
+}

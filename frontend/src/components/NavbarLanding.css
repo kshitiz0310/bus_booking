@@ -1,0 +1,129 @@
+.navbar-landing {
+  background: rgba(255, 255, 255, 0.05); /* almost transparent */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: fixed; /* make it overlay the page */
+  top: 0;
+  left: 0;
+  width: 95%;
+  z-index: 100;
+  padding: 1.2rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-landing-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-landing-logo-container {
+  width: 3rem;
+  height: 3rem;
+  background-image: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  transition: all 0.3s ease;
+}
+
+.navbar-landing-logo-container:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+}
+
+.navbar-landing-logo-link {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+.navbar-landing-logo-icon {
+  height: 1.8rem;
+  width: 1.8rem;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: transform .12s ease, color .12s ease;
+}
+
+.navbar-landing-logo-icon:hover {
+  transform: translateY(-2px);
+}
+
+.navbar-landing-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-landing-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-landing-login-button {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  transition: all 0.3s ease;
+  border: none;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.navbar-landing-login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.navbar-landing-signup-button {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.navbar-landing-signup-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* subtle hover/focus */
+.navbar-landing-logo-link:hover .navbar-landing-logo-icon {
+  transform: translateY(-2px);
+}
+
+.navbar-landing-logo-link:focus {
+  box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.12);
+  border-radius: 6px;
+}

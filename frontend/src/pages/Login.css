@@ -1,0 +1,222 @@
+/* Professional, HomePage-consistent Login styles using ../uploads/bus-background.png */
+
+:root{
+  --accent-grad: linear-gradient(135deg,#00f2fe 0%,#4facfe 100%);
+  --glass-bg: rgba(255,255,255,0.06);
+  --glass-border: rgba(255,255,255,0.08);
+  --muted: rgba(255,255,255,0.85);
+  --danger: #ff7b7b;
+}
+
+/* Page / background */
+.login-page,
+.login-bg {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px;
+  background-image: url('../uploads/bus-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+}
+
+/* Dark overlay for readability */
+.login-overlay,
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7));
+  z-index: 1;
+  pointer-events: none;
+  backdrop-filter: blur(3px);
+}
+
+/* Card (glass) */
+.login-container,
+.login-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  padding: 34px 28px;
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(2,6,23,0.6);
+  color: var(--muted);
+  text-align: left;
+}
+
+/* Headings */
+.login-title,
+.login-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.login-subtitle,
+.login-card p.lead {
+  margin: 0 0 18px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+}
+
+/* Form layout */
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Field */
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-field label {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+}
+
+.login-field input {
+  width: 420px;
+  padding: 12px 14px ;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow .16s ease, border-color .16s ease, transform .12s ease;
+}
+
+.login-field input::placeholder {
+  color: rgba(255,255,255,0.55);
+}
+
+.login-field input:focus {
+  border-color: rgba(79,172,254,0.95);
+  box-shadow: 0 10px 30px rgba(79,172,254,0.10);
+  transform: translateY(-1px);
+}
+
+/* Error */
+.login-error {
+  color: var(--danger);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+/* Actions / Buttons */
+.login-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.login-btn,
+.btn-primary {
+  appearance: none;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--accent-grad);
+  box-shadow: 0 10px 30px rgba(79,172,254,0.18);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.login-btn:hover,
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 44px rgba(79,172,254,0.22);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-outline,
+.login-outline {
+  background: transparent;
+  color: rgba(255,255,255,0.95);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .14s, border-color .14s;
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.22);
+}
+
+/* Small helpers */
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
+}
+
+/* Links */
+.login-footer,
+.login-links {
+  margin-top: 12px;
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.85);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.login-link,
+.login-links a {
+  color: #cfe9ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-links a:hover,
+.login-link:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 540px){
+  .login-container,
+  .login-card {
+    padding: 18px;
+    border-radius: 10px;
+    margin: 12px;
+  }
+  .login-page,
+  .login-bg { padding: 18px 8px; }
+}
