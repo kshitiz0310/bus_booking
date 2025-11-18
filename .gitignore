@@ -42,6 +42,5 @@ Thumbs.db
 *.swp
 *.swo
 
-# Uploads
-uploads/
-*/uploads/
+# Backend uploads (keep ignored)
+backend/uploads/
