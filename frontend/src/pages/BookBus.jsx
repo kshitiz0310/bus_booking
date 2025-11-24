@@ -49,32 +49,36 @@ export default function BookBus() {
   };
 
   const handleBooking = async () => {
-    if (selectedSeats.length === 0) {
-      alert('Please select at least one seat');
-      return;
-    }
-    
-    if (!transactionFile) {
-      alert('Please upload transaction screenshot');
-      return;
-    }
+  if (selectedSeats.length === 0) {
+    alert('Please select at least one seat');
+    return;
+  }
+  
+  if (!transactionFile) {
+    alert('Please upload transaction screenshot');
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append('busId', busId);
-    formData.append('seatNumbers', JSON.stringify(selectedSeats));
-    formData.append('totalAmount', selectedSeats.length * bus.fare);
-    formData.append('transactionScreenshot', transactionFile);
+  const formData = new FormData();
+  formData.append('busId', busId);
+  formData.append('seatNumbers', JSON.stringify(selectedSeats));
+  formData.append('totalAmount', selectedSeats.length * bus.fare);
+  formData.append('utrNumber', utrNumber);  // 🔥 FIXED (MUST SEND)
+  formData.append('transactionScreenshot', transactionFile);
 
-    try {
-      await API.post('/bookings', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      alert('Booking submitted! Payment verification pending.');
-      navigate('/user/bookings');
-    } catch (error) {
-      alert('Booking failed: ' + error.response?.data?.message);
-    }
-  };
+  try {
+    await API.post('/bookings', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    alert('Booking submitted! Payment verification pending.');
+    navigate('/user/bookings');
+
+  } catch (error) {
+    alert('Booking failed: ' + (error.response?.data?.message || "Server Error"));
+  }
+};
+
 
   if (loading) return <div>Loading...</div>;
 
@@ -145,15 +149,27 @@ export default function BookBus() {
           </div>
 
           <div className="upload-section">
-            <label htmlFor="transaction">Upload Transaction Screenshot:</label>
-            <input
-              type="file"
-              id="transaction"
-              accept="image/*"
-              onChange={(e) => setTransactionFile(e.target.files[0])}
-              required
-            />
-          </div>
+  <label>UTR Number:</label>
+  <input 
+    type="text"
+    value={utrNumber}
+    onChange={(e) => setUtrNumber(e.target.value)}
+    placeholder="Enter UTR Number"
+    required
+  />
+</div>
+
+<div className="upload-section">
+  <label htmlFor="transaction">Upload Transaction Screenshot:</label>
+  <input
+    type="file"
+    id="transaction"
+    accept="image/*"
+    onChange={(e) => setTransactionFile(e.target.files[0])}
+    required
+  />
+</div>
+
 
           <button 
             className="confirm-booking-btn"

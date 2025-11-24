@@ -12,7 +12,7 @@ export default function NavbarAdmin() {
             <Bus className="navbar-admin-logo-icon" />
            </Link>
         </div>
-        <span className="navbar-admin-title">Smartify Admin</span>
+        <span className="navbar-admin-title">Smart Bus Admin</span>
       </div>
       <div className="navbar-admin-right">
         <Link to="/admin" className="navbar-admin-link">Dashboard</Link>

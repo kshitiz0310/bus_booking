@@ -38,37 +38,46 @@ router.get("/seats/:busId", protect, async (req, res) => {
 router.post("/", protect, upload.single('transactionScreenshot'), async (req, res) => {
   try {
     const { busId, seatNumbers, totalAmount, utrNumber } = req.body;
+
     const parsedSeats = JSON.parse(seatNumbers);
-    
+
     const bus = await Bus.findById(busId);
     if (!bus) return res.status(404).json({ message: "Bus not found" });
-    
-    // Check if seats are available
+
     const bookedSeats = bus.bookedSeats || [];
-    const unavailableSeats = parsedSeats.filter(seat => bookedSeats.includes(seat));
+
+    // check for already booked seats
+    const unavailableSeats = parsedSeats.filter(s => bookedSeats.includes(s));
     if (unavailableSeats.length > 0) {
-      return res.status(400).json({ message: `Seats ${unavailableSeats.join(', ')} are already booked` });
+      return res.status(400).json({
+        message: `Seats ${unavailableSeats.join(', ')} are already booked`
+      });
     }
 
+    // create booking
     const booking = await Booking.create({
       userId: req.user.id,
       busId,
       seatNumbers: parsedSeats,
       totalAmount,
       utrNumber,
-      transactionScreenshot: req.file ? req.file.filename : null
+      transactionScreenshot: req.file ? req.file.filename : null,
+      paymentStatus: "pending"
     });
 
+    // update bus bookedSeats only (NO seatsAvailable manipulation)
     await Bus.findByIdAndUpdate(busId, {
-      $push: { bookedSeats: { $each: parsedSeats } },
-      $inc: { seatsAvailable: -parsedSeats.length }
+      $push: { bookedSeats: { $each: parsedSeats } }
     });
 
     res.json(booking);
+
   } catch (error) {
+    console.error("Booking Error:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // User: Get my bookings
 router.get("/my", protect, async (req, res) => {

@@ -12,7 +12,7 @@ export default function NavbarUser() {
           <Bus className="navbar-user-logo-icon" />
            </Link>
         </div>
-        <span className="navbar-user-title">BusKaro</span>
+        <span className="navbar-user-title">Smart Bus</span>
       </div>
       <div className="navbar-user-right">
         <Link to="/user" className="navbar-user-link">Dashboard</Link>

@@ -1,195 +1,256 @@
-.homepage-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  /* background: linear-gradient(to right, #2563eb, #60a5fa); */
-  /* color: #336ab6; */
-  
+/* ---------- GENERAL ---------- */
+:root{
+  --accent: #60a5fa;
+  --deep-1: #0f172a;
+  --deep-2: #1e293b;
+  --glass-border: rgba(255,255,255,0.08);
 }
 
+/* Make animations smoother but not too heavy */
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- BACKGROUND HERO ---------- */
 .background-img {
-  position: relative; /* Remove duplicate position property */
+  position: relative;
   height: 100vh;
   width: 100%;
-  background-image: url('../uploads/bus-background.png'); 
+  background-image: url('../uploads/bus-background.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  z-index: 1;
+  background-attachment: scroll;/* avoid fixed for performance */
   display: flex;
-  flex-direction: column;
-  padding-bottom: 20px; /* keep some breathing room above footer */
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-/* Make sure the overlay is properly positioned */
+/* dark overlay to keep contrast consistent */
 .overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  background: linear-gradient(
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.7)
-  );
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,23,0.55), rgba(6,8,23,0.72));
   z-index: 1;
-  pointer-events: none; /* Allows clicking through the overlay */
 }
 
+/* ---------- HERO ---------- */
 .homepage-hero {
   position: relative;
   z-index: 2;
-  color: #ffffff;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 16px 40px 16px;
   text-align: center;
+  color: #fff;
+  padding: 140px 20px 120px; /* ⬅️ Bigger hero padding */
+  width: 100%;
+  max-width: 1100px;
+  animation: floatInUp 850ms cubic-bezier(.2,.9,.3,1) both;
+}
+
+/* floating from bottom on load (old style) */
+@keyframes floatInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .homepage-hero h1 {
-  font-size: 3rem;
-  font-weight: bold;
-  margin-bottom: 16px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 4rem;                 /* ⬅️ Bigger */
+  font-weight: 900;
+  margin-bottom: 22px;
+  letter-spacing: -0.03em;
+  text-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
 
 .homepage-hero p {
-  font-size: 1.25rem;
-  margin-bottom: 32px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  font-size: 1.35rem;             /* ⬅️ Increased */
+  margin: 0 auto 30px auto;
+  max-width: 760px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.94);
 }
 
+
+/* ---------- MAGNETIC BUTTON (floating idle + magnet) ---------- */
 .homepage-btn {
-  /* background: #fff; */
-  backdrop-filter: blur(20px);
-  color: #ffffff;
-  font-weight: bold;
-  padding: 14px 36px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.1rem;
-  transition: background 0.2s;
-}
-
-.homepage-btn:hover {
-  background: #f1f5f9;
-}
-
-.homepage-features {
+  display: inline-block;
   position: relative;
-  z-index: 2;
-  color: #eee6e6;
-  padding: 48px 16px;
-  margin-bottom: 20px; /* reduced gap between cards and footer */
+  z-index: 3;
+  padding: 16px 38px;       /* bigger CTA */
+  border-radius: 14px;      /* smoother shape */
+  font-weight: 700;
+  font-size: 1.2rem;        /* bigger text */
+  color: #0b1220;
+  background: linear-gradient(180deg, #ffffff, #f3f6ff);
+  border: 1px solid rgba(2,6,23,0.06);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.18);
+  text-decoration: none;
+  cursor: pointer;
+  will-change: transform;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin-top: 30px;         /* lowered button */
+  animation: floatButton 3200ms ease-in-out infinite;
 }
 
-.homepage-features h2 {
+
+/* floating idle animation (old behavior) */
+@keyframes floatButton {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+.homepage-btn {
+  animation: floatButton 3000ms ease-in-out infinite;
+}
+
+/* stop float while hovered (magnet active) */
+.homepage-btn:hover {
+  animation: none;
+  transform: translateY(-5px) scale(1.04);
+  box-shadow: 0 22px 50px rgba(35, 99, 235, 0.22);
+}
+
+/* magnet helper class for pointer effects */
+.magnet-btn {
+  transition: transform 0.18s ease-out, box-shadow 0.22s ease;
+}
+
+/* ---------- FEATURES SECTION (dark gradient so cards pop) ---------- */
+.homepage-features {
+  padding: 72px 20px;
   text-align: center;
-  font-size: 2.2rem;
-  font-weight: bold;
-  margin-bottom: 36px;
-  color: #ffffff;
+  color: #fff;
+  background: linear-gradient(180deg, var(--deep-1), var(--deep-2));
+  margin-top: -30px; /* soft overlap feel from hero */
+  z-index: 2;
+  position: relative;
 }
 
+/* AOS fade-up still triggers for heading */
+.homepage-features h2 {
+  font-size: 2.2rem;
+  color: #fff;
+  margin-bottom: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- GRID ---------- */
 .features-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 32px;
   justify-content: center;
-  margin-bottom: 20px; /* extra safety spacing */
+  gap: 26px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
+/* ---------- FEATURE CARD (glass look with old hover glow) ---------- */
 .feature-card {
-  /* background: #f3f4f6; */
-  backdrop-filter: blur(50px);
-  border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0,0,0,0.07); */
-  padding: 32px 20px;
   width: 280px;
+  padding: 26px;
+  border-radius: 14px;
   text-align: center;
-  /* margin-bottom: 20px; Changed from 50px to 20px */
-  background: rgba(118, 120, 237, 0.1); /* Add this */
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px); /* subtle glass */
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  transition: transform 0.32s cubic-bezier(.2,.9,.3,1), box-shadow 0.28s ease, background 0.28s ease;
+  cursor: pointer;
+}
+
+/* old-style hover: lift + strong blue glow */
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.09));
+  box-shadow: 0 18px 40px rgba(37,99,235,0.16);
+  border: 1px solid rgba(96,165,250,0.16);
 }
 
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 16px;
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  transition: transform 0.28s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: translateY(-4px) rotate(6deg) scale(1.15);
 }
 
 .feature-card h3 {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  color: #e6eefc;
 }
 
-/* .feature-card p {
-  color: #555;
-} */
+.feature-card p {
+  color: rgba(230,235,255,0.85);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
 
+/* ---------- FOOTER ---------- */
 .homepage-footer {
-  backdrop-filter: blur(8px);
-  background: linear-gradient(135deg, #2b4162 0%, #12100e 100%); /* same tone as navbar */
-  color: #fff;
-  padding: 28px 0;         /* vertical padding */
-  position: relative;
-  z-index: 3;
-  width: 100%;
-  margin-top: 0px;        /* spacing between features and footer */
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, #0b1220, #071226);
+  color: rgba(255,255,255,0.9);
+  padding: 36px 16px;
+  margin-top: 12px;
 }
 
 .footer-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
   max-width: 1100px;
-  margin: 0 auto 32px auto;
+  margin: 0 auto;
   padding: 0 16px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-start;
-}
-
-.footer-grid > div {
-  min-width: 220px;
-  margin-bottom: 24px;
 }
 
 .footer-grid h3 {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.footer-grid ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-grid li {
   margin-bottom: 8px;
+  color: #fff;
 }
 
 .footer-grid a {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255,255,255,0.92);
   text-decoration: none;
-  transition: color 0.2s;
 }
-
 .footer-grid a:hover {
-  color: #60a5fa;
+  color: var(--accent);
   text-decoration: underline;
 }
 
 .footer-bottom {
-  border-top: 1px solid #334155;
-  margin-top: 16px;
-  padding: 16px 0;
   text-align: center;
-  font-size: 0.95rem;
+  margin-top: 18px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.7);
 }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 880px) {
+  .homepage-hero h1 { font-size: 2.4rem; }
+  .homepage-hero p { font-size: 1rem; padding: 0 8px;}
+  .features-grid { gap: 18px; }
+}
+
+@media (max-width: 520px) {
+  .feature-card { width: 100%; max-width: 420px; }
+  .homepage-hero { padding: 12px; }
+  .homepage-btn { padding: 12px 20px; font-size: 1rem; }
+}
+
+/* keep smooth scrolling */
+html { scroll-behavior: smooth; }
