@@ -1,29 +1,18 @@
 import express from "express";
-import multer from "multer";
-import path from "path";
 import Booking from "../Models/Booking.js";
 import { Bus } from "../Models/Bus.js";
 import { protect, adminOnly } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/transactions/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-const upload = multer({ storage });
-
-// Get bus seats info
+/* --------------------------
+   GET SEATS FOR A BUS
+--------------------------- */
 router.get("/seats/:busId", protect, async (req, res) => {
   try {
     const bus = await Bus.findById(req.params.busId);
     if (!bus) return res.status(404).json({ message: "Bus not found" });
-    
+
     res.json({
       capacity: bus.capacity,
       bookedSeats: bus.bookedSeats,
@@ -34,112 +23,111 @@ router.get("/seats/:busId", protect, async (req, res) => {
   }
 });
 
-// User: Create booking with payment
-router.post("/", protect, upload.single('transactionScreenshot'), async (req, res) => {
+/* --------------------------
+   CREATE BOOKING (after Razorpay Payment)
+--------------------------- */
+router.post("/", protect, async (req, res) => {
   try {
-    const { busId, seatNumbers, totalAmount, utrNumber } = req.body;
+    const { busId, seatNumbers, totalAmount, paymentId, orderId } = req.body;
 
-    const parsedSeats = JSON.parse(seatNumbers);
+    // REQUIRED FIELDS CHECK
+    if (!busId || !seatNumbers || !paymentId || !orderId) {
+      return res.status(400).json({ message: "Missing required data" });
+    }
+
+    // 100% SAFE SEAT PARSING
+    let parsedSeats = [];
+    try {
+      parsedSeats = Array.isArray(seatNumbers)
+        ? seatNumbers
+        : JSON.parse(seatNumbers);
+    } catch (err) {
+      return res.status(400).json({ message: "Invalid seatNumbers format" });
+    }
 
     const bus = await Bus.findById(busId);
     if (!bus) return res.status(404).json({ message: "Bus not found" });
 
-    const bookedSeats = bus.bookedSeats || [];
+    // Already booked seat check
+    const alreadyBooked = parsedSeats.some((s) =>
+      bus.bookedSeats.includes(s)
+    );
 
-    // check for already booked seats
-    const unavailableSeats = parsedSeats.filter(s => bookedSeats.includes(s));
-    if (unavailableSeats.length > 0) {
+    if (alreadyBooked) {
       return res.status(400).json({
-        message: `Seats ${unavailableSeats.join(', ')} are already booked`
+        message: "Some selected seats are already booked."
       });
     }
 
-    // create booking
+    // SAVE BOOKING
     const booking = await Booking.create({
       userId: req.user.id,
       busId,
       seatNumbers: parsedSeats,
       totalAmount,
-      utrNumber,
-      transactionScreenshot: req.file ? req.file.filename : null,
-      paymentStatus: "pending"
+      paymentId,
+      orderId,
+      paymentStatus: "paid",
+      status: "confirmed"
     });
 
-    // update bus bookedSeats only (NO seatsAvailable manipulation)
+    // UPDATE BUS SEATS
     await Bus.findByIdAndUpdate(busId, {
-      $push: { bookedSeats: { $each: parsedSeats } }
+      $push: { bookedSeats: { $each: parsedSeats } },
+      $inc: { seatsAvailable: -parsedSeats.length }
     });
 
-    res.json(booking);
+    res.json({ success: true, booking });
 
   } catch (error) {
-    console.error("Booking Error:", error.message);
-    res.status(500).json({ message: error.message });
+    console.error("BOOKING ERROR:", error);
+    res.status(500).json({ message: "Booking failed" });
   }
 });
 
-
-// User: Get my bookings
+/* --------------------------
+   USER – MY BOOKINGS
+--------------------------- */
 router.get("/my", protect, async (req, res) => {
-  const bookings = await Booking.find({ userId: req.user.id }).populate("busId");
+  const bookings = await Booking.find({ userId: req.user.id })
+    .populate("busId");
   res.json(bookings);
 });
 
-// Admin: Get all bookings (filter by city/date)
+/* --------------------------
+   ADMIN – All Bookings
+--------------------------- */
 router.get("/", protect, adminOnly, async (req, res) => {
-  const { city, date, busId } = req.query;
-
-  let filter = {};
-  if (busId) filter.busId = busId;
-
-  let bookings = await Booking.find(filter)
+  const bookings = await Booking.find()
     .populate("busId")
     .populate("userId", "name email");
 
-  if (city) bookings = bookings.filter((b) => b.busId.city === city);
-  if (date) bookings = bookings.filter((b) => b.busId.date === date);
-
   res.json(bookings);
 });
 
-// Admin: Report
-router.get("/report", protect, adminOnly, async (req, res) => {
-  const buses = await Bus.find();
-  const report = [];
-
-  for (const bus of buses) {
-    const bookings = await Booking.find({ busId: bus._id });
-    report.push({
-      bus: bus.busNumber,
-      exam: bus.exam,
-      city: bus.city,
-      date: bus.date,
-      totalSeats: bus.totalSeats,
-      booked: bookings.reduce((sum, b) => sum + b.seatNumbers.length, 0),
-    });
-  }
-
-  res.json(report);
-});
-
-// Admin: Verify payment
+/* --------------------------
+   ADMIN – Verify Payment
+--------------------------- */
 router.patch("/:id/verify", protect, adminOnly, async (req, res) => {
   try {
     const { paymentStatus } = req.body;
     const booking = await Booking.findById(req.params.id);
-    
+
     if (!booking) return res.status(404).json({ message: "Booking not found" });
-    
+
     booking.paymentStatus = paymentStatus;
     await booking.save();
-    
+
     res.json({ message: "Payment status updated", booking });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Delete booking (Admin only)
+/* --------------------------
+   ADMIN – Delete Booking
+--------------------------- */
 router.delete("/:id", protect, adminOnly, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -151,20 +139,27 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
     });
 
     await Booking.findByIdAndDelete(req.params.id);
+
     res.json({ message: "Booking deleted successfully" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Cancel booking (User or Admin)
+/* --------------------------
+   USER – Cancel Booking
+--------------------------- */
 router.patch("/:id/cancel", protect, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
-    if (req.user.role !== "admin" && booking.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to cancel this booking" });
+    if (
+      req.user.role !== "admin" &&
+      booking.userId.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
     }
 
     booking.status = "cancelled";
@@ -176,6 +171,7 @@ router.patch("/:id/cancel", protect, async (req, res) => {
     });
 
     res.json({ message: "Booking cancelled", booking });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

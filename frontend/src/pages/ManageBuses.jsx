@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api";
-import "./ManageBuses.css"; // Create this file for styles
+import "./ManageBuses.css";
 
 export default function ManageBuses() {
   const [buses, setBuses] = useState([]);
@@ -16,7 +16,7 @@ export default function ManageBuses() {
     driverPhone: "",
     capacity: 40,
     seatsAvailable: 40,
-    ac: true,
+    isAc: true,        // UPDATED (IFAC)
     fare: 0,
     notes: ""
   });
@@ -46,10 +46,10 @@ export default function ManageBuses() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value
+      [name]: value
     });
   };
 
@@ -61,6 +61,7 @@ export default function ManageBuses() {
     try {
       await API.post("/buses", formData);
       setShowAddForm(false);
+
       setFormData({
         busNumber: "",
         date: "",
@@ -72,13 +73,14 @@ export default function ManageBuses() {
         driverPhone: "",
         capacity: 40,
         seatsAvailable: 40,
-        ac: true,
+        isAc: true,   // RESET
         fare: 0,
         notes: ""
       });
+
       loadBuses();
     } catch (error) {
-      setError("Failed to add bus. Please try again.");
+      setError(error.response?.data?.message || "Failed to add bus.");
       console.error("Error adding bus:", error);
     } finally {
       setLoading(false);
@@ -97,24 +99,23 @@ export default function ManageBuses() {
           <h3>Add New Bus</h3>
           {error && <p className="error-message">{error}</p>}
 
+          {/* Bus Number + Date */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="busNumber">Bus Number:</label>
+              <label>Bus Number:</label>
               <input
                 type="text"
-                id="busNumber"
                 name="busNumber"
                 value={formData.busNumber}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g., BUS-001"
               />
             </div>
+
             <div className="form-group">
-              <label htmlFor="date">Date:</label>
+              <label>Date:</label>
               <input
                 type="date"
-                id="date"
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
@@ -123,23 +124,23 @@ export default function ManageBuses() {
             </div>
           </div>
 
+          {/* Time */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="departureTime">Departure Time:</label>
+              <label>Departure Time:</label>
               <input
                 type="time"
-                id="departureTime"
                 name="departureTime"
                 value={formData.departureTime}
                 onChange={handleInputChange}
                 required
               />
             </div>
+
             <div className="form-group">
-              <label htmlFor="arrivalTime">Arrival Time:</label>
+              <label>Arrival Time:</label>
               <input
                 type="time"
-                id="arrivalTime"
                 name="arrivalTime"
                 value={formData.arrivalTime}
                 onChange={handleInputChange}
@@ -148,119 +149,127 @@ export default function ManageBuses() {
             </div>
           </div>
 
+          {/* Points */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="startPoint">Start Point:</label>
+              <label>Start Point:</label>
               <input
                 type="text"
-                id="startPoint"
                 name="startPoint"
                 value={formData.startPoint}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g., New York"
               />
             </div>
+
             <div className="form-group">
-              <label htmlFor="destination">Destination:</label>
+              <label>Destination:</label>
               <input
                 type="text"
-                id="destination"
                 name="destination"
                 value={formData.destination}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g., Boston"
               />
             </div>
           </div>
 
+          {/* Driver */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="driverName">Driver Name:</label>
+              <label>Driver Name:</label>
               <input
                 type="text"
-                id="driverName"
                 name="driverName"
                 value={formData.driverName}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g., John Doe"
               />
             </div>
+
             <div className="form-group">
-              <label htmlFor="driverPhone">Driver Phone:</label>
+              <label>Driver Phone:</label>
               <input
                 type="tel"
-                id="driverPhone"
                 name="driverPhone"
                 value={formData.driverPhone}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g., +1-555-123-4567"
               />
             </div>
           </div>
 
+          {/* Capacity + Fare */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="capacity">Capacity:</label>
+              <label>Capacity:</label>
               <input
                 type="number"
-                id="capacity"
                 name="capacity"
                 value={formData.capacity}
                 onChange={handleInputChange}
-                min="1"
                 required
               />
             </div>
+
             <div className="form-group">
-              <label htmlFor="fare">Fare:</label>
+              <label>Fare:</label>
               <input
                 type="number"
-                id="fare"
                 name="fare"
                 value={formData.fare}
                 onChange={handleInputChange}
-                min="0"
-                step="0.01"
                 required
               />
             </div>
           </div>
 
+          {/* Notes */}
           <div className="form-group">
-            <label htmlFor="notes">Notes:</label>
+            <label>Notes:</label>
             <textarea
-              id="notes"
               name="notes"
+              rows="3"
               value={formData.notes}
               onChange={handleInputChange}
-              placeholder="Any additional notes..."
-              rows="3"
-            />
+            ></textarea>
           </div>
 
-          <div className="form-group checkbox-group">
-            <label htmlFor="ac">
-              <input
-                type="checkbox"
-                id="ac"
-                name="ac"
-                checked={formData.ac}
-                onChange={handleInputChange}
-              />
-              Air Conditioned
-            </label>
+          {/* AC Type (IFAC) */}
+          <div className="form-group">
+            <label>Air Conditioning:</label>
+
+            <div className="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="isAc"
+                  checked={formData.isAc === true}
+                  onChange={() => setFormData({ ...formData, isAc: true })}
+                />
+                AC
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="isAc"
+                  checked={formData.isAc === false}
+                  onChange={() => setFormData({ ...formData, isAc: false })}
+                />
+                Non-AC
+              </label>
+            </div>
           </div>
 
+          {/* Submit */}
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Adding Bus..." : "Add Bus"}
           </button>
         </form>
       )}
 
+      {/* Bus List */}
       <table className="buses-table">
         <thead>
           <tr>
@@ -274,16 +283,17 @@ export default function ManageBuses() {
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
-          {buses.map((bus) => (
+          {buses.map(bus => (
             <tr key={bus._id}>
               <td>{bus.busNumber}</td>
-              <td>{bus.startPoint} to {bus.destination}</td>
+              <td>{bus.startPoint} → {bus.destination}</td>
               <td>{new Date(bus.date).toLocaleDateString()}</td>
               <td>{bus.departureTime}</td>
               <td>{bus.arrivalTime}</td>
               <td>{bus.capacity}</td>
-              <td>${bus.fare}</td>
+              <td>₹{bus.fare}</td>
               <td>
                 <button className="delete-btn" onClick={() => handleDelete(bus._id)}>
                   Delete
@@ -292,6 +302,7 @@ export default function ManageBuses() {
             </tr>
           ))}
         </tbody>
+
       </table>
     </div>
   );

@@ -32,21 +32,29 @@ export default function UserDashboard() {
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
     if (type === "checkbox") {
-      setSearch((s) => ({ ...s, [name]: checked }));
+      setSearch((prev) => ({ ...prev, [name]: checked }));
     } else {
-      setSearch((s) => ({ ...s, [name]: value }));
+      setSearch((prev) => ({ ...prev, [name]: value }));
     }
     setError("");
   };
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
+
     if (!search.from.trim() || !search.to.trim()) {
       setError("Please enter both starting point and destination.");
       return;
     }
+
+    if (!search.ac && !search.nonAc) {
+      setError("Please select at least AC or Non-AC.");
+      return;
+    }
+
     setError("");
     setLoading(true);
+
     try {
       const params = new URLSearchParams({
         from: search.from,
@@ -55,6 +63,7 @@ export default function UserDashboard() {
         ac: search.ac ? "1" : "0",
         nonAc: search.nonAc ? "1" : "0",
       }).toString();
+
       const { data } = await API.get(`/buses?${params}`);
       setBuses(data);
     } catch (error) {
@@ -71,7 +80,7 @@ export default function UserDashboard() {
       <div className="dashboard-content">
         <h2>Welcome, {user ? user.name : "User"}!</h2>
 
-        <form className="search-bus-form" onSubmit={handleSearchSubmit} aria-label="Search buses">
+        <form className="search-bus-form" onSubmit={handleSearchSubmit}>
           <input
             name="from"
             type="text"
@@ -79,7 +88,6 @@ export default function UserDashboard() {
             placeholder="Starting point"
             value={search.from}
             onChange={handleChange}
-            aria-label="Starting point"
           />
 
           <input
@@ -89,7 +97,6 @@ export default function UserDashboard() {
             placeholder="Destination"
             value={search.to}
             onChange={handleChange}
-            aria-label="Destination"
           />
 
           <input
@@ -98,10 +105,9 @@ export default function UserDashboard() {
             className="search-bus-input"
             value={search.date}
             onChange={handleChange}
-            aria-label="Travel date"
           />
 
-          <div className="search-filters" role="group" aria-label="Filters">
+          <div className="search-filters">
             <label className="filter-checkbox">
               <input
                 name="ac"
@@ -111,6 +117,7 @@ export default function UserDashboard() {
               />
               AC
             </label>
+
             <label className="filter-checkbox">
               <input
                 name="nonAc"
@@ -121,12 +128,13 @@ export default function UserDashboard() {
               Non-AC
             </label>
 
-            <button type="submit" className="search-bus-button">Search</button>
+            <button type="submit" className="search-bus-button">
+              Search
+            </button>
           </div>
         </form>
 
         {error && <p className="search-error">{error}</p>}
-
         {loading && <p>Loading buses...</p>}
 
         {buses.length > 0 && (
@@ -138,13 +146,18 @@ export default function UserDashboard() {
                   <p><strong>Route:</strong> {bus.startPoint} → {bus.destination}</p>
                   <p><strong>Date:</strong> {bus.date}</p>
                   <p><strong>Time:</strong> {bus.departureTime} - {bus.arrivalTime}</p>
-                  <p><strong>Type:</strong> {bus.ac ? "AC" : "Non-AC"}</p>
+
+                  {/* FIXED AC/NON-AC DISPLAY */}
+                  <p><strong>Type:</strong> {bus.isAc ? "AC" : "Non-AC"}</p>
+
                   <p><strong>Capacity:</strong> {bus.capacity}</p>
                   <p><strong>Available Seats:</strong> {bus.seatsAvailable}</p>
                   <p><strong>Fare:</strong> ₹{bus.fare}</p>
                   <p><strong>Driver:</strong> {bus.driverName} ({bus.driverPhone})</p>
+
                   {bus.notes && <p><strong>Notes:</strong> {bus.notes}</p>}
                 </div>
+
                 <button
                   className="book-btn"
                   onClick={() => navigate(`/book/${bus._id}`)}

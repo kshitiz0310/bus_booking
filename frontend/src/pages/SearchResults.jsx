@@ -13,18 +13,21 @@ export default function SearchResults() {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const date = searchParams.get("date");
-  const ac = searchParams.get("ac");
-  const nonAc = searchParams.get("nonAc");
+
+  // NEW: isAc filter for IFAC system
+  const isAc = searchParams.get("isAc");  // "true" / "false" / null
 
   useEffect(() => {
     const fetchBuses = async () => {
       try {
         const params = new URLSearchParams();
+
         if (from) params.append("from", from);
         if (to) params.append("to", to);
         if (date) params.append("date", date);
-        if (ac) params.append("ac", ac);
-        if (nonAc) params.append("nonAc", nonAc);
+
+        // IFAC filter sent to backend
+        if (isAc !== null) params.append("isAc", isAc);
 
         const { data } = await API.get(`/buses?${params.toString()}`);
         setBuses(data);
@@ -37,19 +40,35 @@ export default function SearchResults() {
     };
 
     fetchBuses();
-  }, [from, to, date, ac, nonAc]);
+  }, [from, to, date, isAc]);
 
   const handleBookBus = (busId) => {
     navigate(`/book/${busId}`);
   };
 
-  if (loading) return <div className="search-results-container"><p>Loading buses...</p></div>;
-  if (error) return <div className="search-results-container"><p className="error">{error}</p></div>;
+  if (loading) {
+    return (
+      <div className="search-results-container">
+        <p>Loading buses...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="search-results-container">
+        <p className="error">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="search-results-container">
       <h2>Search Results</h2>
-      <p>From: {from} | To: {to} | Date: {date || "Any"}</p>
+      <p>
+        From: {from} | To: {to} | Date: {date || "Any"} | 
+        Type: {isAc === "true" ? "AC" : isAc === "false" ? "Non-AC" : "Any"}
+      </p>
 
       {buses.length === 0 ? (
         <p>No buses found for your search criteria.</p>
@@ -62,13 +81,18 @@ export default function SearchResults() {
                 <p><strong>Route:</strong> {bus.startPoint} → {bus.destination}</p>
                 <p><strong>Date:</strong> {bus.date}</p>
                 <p><strong>Time:</strong> {bus.departureTime} - {bus.arrivalTime}</p>
-                <p><strong>Type:</strong> {bus.ac ? "AC" : "Non-AC"}</p>
+
+                {/* FIXED TYPE - IFAC */}
+                <p><strong>Type:</strong> {bus.isAc ? "AC" : "Non-AC"}</p>
+
                 <p><strong>Capacity:</strong> {bus.capacity}</p>
                 <p><strong>Available Seats:</strong> {bus.seatsAvailable}</p>
                 <p><strong>Fare:</strong> ₹{bus.fare}</p>
                 <p><strong>Driver:</strong> {bus.driverName} ({bus.driverPhone})</p>
+
                 {bus.notes && <p><strong>Notes:</strong> {bus.notes}</p>}
               </div>
+
               <button
                 className="book-btn"
                 onClick={() => handleBookBus(bus._id)}
