@@ -12,7 +12,10 @@ const busSchema = new mongoose.Schema({
   capacity: { type: Number, required: true },
   seatsAvailable: { type: Number, required: true },
   bookedSeats: { type: [String], default: [] },
-  ac: { type: Boolean, default: false },
+
+
+  isAc: { type: Boolean, required: true },
+
   fare: { type: Number, required: true },
   notes: { type: String, default: "" }
 });

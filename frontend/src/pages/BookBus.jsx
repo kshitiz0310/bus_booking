@@ -6,10 +6,9 @@ import './BookBus.css';
 export default function BookBus() {
   const { busId } = useParams();
   const navigate = useNavigate();
+
   const [bus, setBus] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [utrNumber, setUtrNumber] = useState('');
-  const [transactionFile, setTransactionFile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +21,7 @@ export default function BookBus() {
       const busInfo = await API.get(`/buses/${busId}`);
       setBus({ ...busInfo.data, ...seatData.data });
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -37,10 +36,8 @@ export default function BookBus() {
   };
 
   const handleSeatClick = (seatNumber) => {
-    if (bus.bookedSeats && bus.bookedSeats.includes(seatNumber)) {
-      return;
-    }
-    
+    if (bus.bookedSeats?.includes(seatNumber)) return;
+
     if (selectedSeats.includes(seatNumber)) {
       setSelectedSeats(selectedSeats.filter(seat => seat !== seatNumber));
     } else {
@@ -48,39 +45,74 @@ export default function BookBus() {
     }
   };
 
+  // 💳 Razorpay Payment + Booking
   const handleBooking = async () => {
-  if (selectedSeats.length === 0) {
-    alert('Please select at least one seat');
-    return;
-  }
-  
-  if (!transactionFile) {
-    alert('Please upload transaction screenshot');
-    return;
-  }
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat.");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append('busId', busId);
-  formData.append('seatNumbers', JSON.stringify(selectedSeats));
-  formData.append('totalAmount', selectedSeats.length * bus.fare);
-  formData.append('utrNumber', utrNumber);  // 🔥 FIXED (MUST SEND)
-  formData.append('transactionScreenshot', transactionFile);
+    const totalAmount = selectedSeats.length * bus.fare;
 
-  try {
-    await API.post('/bookings', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    try {
+      // 1️⃣ Create Razorpay order
+      const orderRes = await API.post("/payment/create-order", {
+        amount: totalAmount,
+      });
 
-    alert('Booking submitted! Payment verification pending.');
-    navigate('/user/bookings');
+      const { id: order_id, amount } = orderRes.data;
 
-  } catch (error) {
-    alert('Booking failed: ' + (error.response?.data?.message || "Server Error"));
-  }
-};
+      // 2️⃣ Razorpay Checkout
+      const options = {
+        key: "rzp_test_RjvHG9WDrUYF5F",
+        amount: amount,
+        currency: "INR",
+        name: "Smart Bus Booking",
+        description: `Bus ${bus.busNumber} Seat Booking`,
+        order_id: order_id,
 
+        handler: async function (response) {
+          try {
+            // 3️⃣ Verify payment
+            const verifyRes = await API.post("/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
 
-  if (loading) return <div>Loading...</div>;
+            if (!verifyRes.data.success) {
+              return alert("Payment verification failed!");
+            }
+
+            // 4️⃣ Save Booking
+            await API.post("/bookings", {
+              busId,
+              seatNumbers: selectedSeats,
+              totalAmount,
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+            });
+
+            alert("Booking successful!");
+            navigate("/my-bookings");
+
+          } catch (err) {
+            console.log(err);
+            alert("Error confirming booking!");
+          }
+        },
+
+        theme: { color: "#4CAF50" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.log(error);
+      alert("Payment could not be initiated.");
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (!bus) return <div>Bus not found</div>;
@@ -90,8 +122,10 @@ export default function BookBus() {
   return (
     <div className="book-bus-container">
       <h2>Book Bus - {bus.busNumber}</h2>
-      
+
       <div className="booking-content">
+
+        {/* Seat Selector */}
         <div className="seat-selection">
           <h3>Select Seats</h3>
           <div className="seat-map">
@@ -99,8 +133,11 @@ export default function BookBus() {
               <button
                 key={seatNumber}
                 className={`seat ${
-                  bus.bookedSeats?.includes(seatNumber) ? 'booked' :
-                  selectedSeats.includes(seatNumber) ? 'selected' : 'available'
+                  bus.bookedSeats?.includes(seatNumber)
+                    ? "booked"
+                    : selectedSeats.includes(seatNumber)
+                    ? "selected"
+                    : "available"
                 }`}
                 onClick={() => handleSeatClick(seatNumber)}
                 disabled={bus.bookedSeats?.includes(seatNumber)}
@@ -109,76 +146,41 @@ export default function BookBus() {
               </button>
             ))}
           </div>
-          
+
           <div className="seat-legend">
-            <span className="legend-item">
-              <div className="seat available"></div> Available
-            </span>
-            <span className="legend-item">
-              <div className="seat selected"></div> Selected
-            </span>
-            <span className="legend-item">
-              <div className="seat booked"></div> Booked
-            </span>
+            <span><div className="seat available"></div> Available</span>
+            <span><div className="seat selected"></div> Selected</span>
+            <span><div className="seat booked"></div> Booked</span>
           </div>
         </div>
 
+        {/* Payment Section */}
         <div className="payment-section">
           <h3>Payment Details</h3>
-          <div className="payment-info">
-            <p><strong>Selected Seats ({selectedSeats.length}):</strong></p>
-            {selectedSeats.length > 0 ? (
-              <div className="seat-tags">
-                {selectedSeats.map(seat => (
-                  <span key={seat} className="seat-tag">{seat}</span>
-                ))}
-              </div>
-            ) : (
-              <p style={{color: '#ccc', fontStyle: 'italic'}}>No seats selected</p>
-            )}
-            <p>Fare per seat: ₹{bus.fare}</p>
-            <p><strong>Total Amount: ₹{totalAmount}</strong></p>
-          </div>
+          <p><strong>Selected Seats ({selectedSeats.length}):</strong></p>
 
-          <div className="qr-code">
-            <h4>Scan QR Code to Pay</h4>
-            <div className="qr-placeholder">
-              <p>QR Code for Payment</p>
-              <p>UPI ID: busbooking@paytm</p>
+          {selectedSeats.length > 0 ? (
+            <div className="seat-tags">
+              {selectedSeats.map(seat => (
+                <span key={seat} className="seat-tag">{seat}</span>
+              ))}
             </div>
-          </div>
+          ) : (
+            <p style={{ color: "#999" }}>No seats selected</p>
+          )}
 
-          <div className="upload-section">
-  <label>UTR Number:</label>
-  <input 
-    type="text"
-    value={utrNumber}
-    onChange={(e) => setUtrNumber(e.target.value)}
-    placeholder="Enter UTR Number"
-    required
-  />
-</div>
+          <p>Fare per seat: ₹{bus.fare}</p>
+          <p><strong>Total Amount: ₹{totalAmount}</strong></p>
 
-<div className="upload-section">
-  <label htmlFor="transaction">Upload Transaction Screenshot:</label>
-  <input
-    type="file"
-    id="transaction"
-    accept="image/*"
-    onChange={(e) => setTransactionFile(e.target.files[0])}
-    required
-  />
-</div>
-
-
-          <button 
+          <button
             className="confirm-booking-btn"
             onClick={handleBooking}
-            disabled={selectedSeats.length === 0 || !transactionFile}
+            disabled={selectedSeats.length === 0}
           >
-            Confirm Booking
+            Pay & Confirm Booking
           </button>
         </div>
+
       </div>
     </div>
   );
