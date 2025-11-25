@@ -10,7 +10,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ManageBuses from "./pages/ManageBuses";
 import ManageUsers from "./pages/ManageUsers";
 import ManageBookings from "./pages/ManageBookings";
-// import BusDetails from "./pages/BusDetails";
 import SearchResults from "./pages/SearchResults";
 import HomePage from "./pages/HomePage";
 
@@ -18,12 +17,48 @@ import NavbarLanding from "./components/NavbarLanding";
 import NavbarUser from "./components/NavbarUser";
 import NavbarAdmin from "./components/NavbarAdmin";
 
+/* ------------------- JWT Decode Function ------------------- */
+function decodeToken(token) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payload = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(payload);
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ------------------- Updated NavbarSelector ------------------- */
 function NavbarSelector() {
-  const location = useLocation();
-  if (location.pathname.startsWith("/admin")) return <NavbarAdmin />;
-  if (location.pathname.startsWith("/user") || location.pathname.startsWith("/book") || location.pathname.startsWith("/my-bookings") || location.pathname.startsWith("/profile")) return <NavbarUser />;
+  const { pathname } = useLocation();
+  const token = localStorage.getItem("token");
+
+  // Pages that must ALWAYS show Landing Navbar
+  const landingPages = ["/", "/login", "/register"];
+
+  if (landingPages.includes(pathname)) {
+    return <NavbarLanding />;
+  }
+
+  let role = null;
+
+  if (token) {
+    try {
+      const payloadBase64 = token.split(".")[1];
+      const payload = JSON.parse(atob(payloadBase64));
+      role = payload.role;
+    } catch (e) {
+      role = null;
+    }
+  }
+
+  if (role === "admin") return <NavbarAdmin />;
+  if (role === "user") return <NavbarUser />;
+
   return <NavbarLanding />;
 }
+
+
 
 function App() {
   return (
@@ -42,7 +77,6 @@ function App() {
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/buses" element={<ManageBuses />} />
-        {/* <Route path="/admin/buses/:id" element={<BusDetails />} /> */}
         <Route path="/admin/bookings" element={<ManageBookings />} />
         <Route path="/admin/users" element={<ManageUsers />} />
       </Routes>
